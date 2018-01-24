@@ -11,6 +11,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
@@ -27,10 +28,13 @@ import java.util.TimerTask;
 public class MainActivity extends AppCompatActivity {
     public static final String EXTRA_MESSAGE = "com.example.limingming.axcountdowntime";
     public static final String EXTRA_BEFORE_TIME = "com.example.limingming.beforetime";
+    public static final String EXTRA_BEFORE_SECOND_TIME = "com.example.limingming.secondbeforetime";
     TextView tv;
+    TextView tv2;
     Button btn;
     Button certainBtn;
     TextView timeLeftLab;
+    TextView timeLeftLab2;
     private Timer timer;
     private TimerTask timerTask;
 
@@ -39,13 +43,18 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         tv = (TextView) findViewById(R.id.editText);
+        tv2 = findViewById(R.id.editText2);
+        certainBtn = findViewById(R.id.button2);
         timeLeftLab = findViewById(R.id.label);
-
+        timeLeftLab2 = findViewById(R.id.textView2);
         SharedPreferences share = getPreferences(Context.MODE_PRIVATE);
         final String  str = share.getString(EXTRA_BEFORE_TIME,"");
+        final String str2 = share.getString(EXTRA_BEFORE_SECOND_TIME, "");
         tv.setText(str);
-
+        tv2.setText(str2);
         startTimer();
+
+//        certainBtn
 
     }
 
@@ -69,11 +78,19 @@ public class MainActivity extends AppCompatActivity {
         SharedPreferences share = getPreferences(Context.MODE_PRIVATE);
         SharedPreferences.Editor editor = share.edit();
         editor.putString(EXTRA_BEFORE_TIME, str);
+
+        String str2 = tv2.getText().toString();
+        editor.putString(EXTRA_BEFORE_SECOND_TIME, str2);
         editor.apply();
 
         startTimer();
 
+        InputMethodManager imm = (InputMethodManager) view.getContext().getSystemService(Context.INPUT_METHOD_SERVICE);
+        imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
 
+
+        tv.clearFocus();
+        tv2.clearFocus();
         // 跳转页面
 //        Intent intent = new Intent(this, DisplayMessageActivity.class);
 //        EditText editText = findViewById(R.id.editText);
@@ -84,7 +101,7 @@ public class MainActivity extends AppCompatActivity {
 
     }
     // 计算倒计时
-    public void calculateTimes(String str) throws ParseException {
+    public String calculateTimes(String str) throws ParseException {
         long currentTime = System.currentTimeMillis() / 1000;
 
         String desTimeStr = str + " 00:00:00";
@@ -107,15 +124,15 @@ public class MainActivity extends AppCompatActivity {
                 resultStr = String.valueOf(day) + "天" + String.valueOf(hour) + "小时" + String.valueOf(min) + "分" + String.valueOf(sec) + "秒";
             }else {
                 resultStr = "时间不正确";
-                onStop();
+//                onStop();
             }
         }else {
             resultStr = "所输入日期不存在";
-            onStop();
+//            onStop();
         }
 
-
-        timeLeftLab.setText(resultStr);
+        return resultStr;
+//        timeLeftLab.setText(resultStr);
 
     }
     // 将 时间格式 转为时间戳
@@ -137,11 +154,23 @@ public class MainActivity extends AppCompatActivity {
                 super.handleMessage(msg);
                 SharedPreferences share = getPreferences(Context.MODE_PRIVATE);
                 final String str = share.getString(EXTRA_BEFORE_TIME, "");
+                final String str2 = share.getString(EXTRA_BEFORE_SECOND_TIME, "");
                 try {
-                    calculateTimes(str);
+                    String resultStr = calculateTimes(str);
+//                    String resultStr2 = calculateTimes(str2);
+                    timeLeftLab.setText(resultStr);
+//                    timeLeftLab2.setText(resultStr2);
                 } catch (ParseException e) {
                     e.printStackTrace();
                 }
+                try {
+                    String resultStr2 = calculateTimes(str2);
+                    timeLeftLab2.setText(resultStr2);
+                } catch (ParseException e) {
+                    e.printStackTrace();
+                }
+
+
             }
         };
     }

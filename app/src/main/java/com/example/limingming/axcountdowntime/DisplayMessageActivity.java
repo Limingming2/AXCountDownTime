@@ -19,4 +19,6 @@ public class DisplayMessageActivity extends AppCompatActivity {
 
 //        BlankFragment fragment =
     }
+
+
 }
