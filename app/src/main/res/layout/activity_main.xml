@@ -15,6 +15,7 @@
         android:ems="10"
         android:hint="@string/time"
         android:inputType="textPersonName"
+        android:singleLine="true"
         android:text="@string/time"
         app:layout_constraintEnd_toStartOf="@+id/button2"
         app:layout_constraintStart_toStartOf="parent"
